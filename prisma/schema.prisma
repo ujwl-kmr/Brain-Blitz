@@ -1,0 +1,39 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+model User {
+  id           String @id @default(cuid())
+  email        String @unique
+  passwordHash String
+}
+
+model Quiz {
+  id        Int        @id @default(autoincrement())
+  title     String
+  image     String
+  createdAt DateTime   @default(now())
+  questions Question[]
+}
+
+model Question {
+  id            Int      @id @default(autoincrement())
+  questionText  String
+  correctOption Int
+  quizId        Int
+  quiz          Quiz     @relation(fields: [quizId], references: [id])
+  options       Option[]
+}
+
+model Option {
+  id         Int      @id @default(autoincrement())
+  text       String
+  questionId Int
+  question   Question @relation(fields: [questionId], references: [id])
+}
