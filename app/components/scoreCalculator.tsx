@@ -1,5 +1,8 @@
 export const calculateScore = (userAnswers, quiz) => {
   let correctAnswers = 0;
+  const quizTitle = quiz.title;
+  const quizLength = quiz.questions.length;
+
   for (const question of quiz.questions) {
     const userAnswer = userAnswers[question.id];
     const correctOptionIndex = question.correctOption;
@@ -12,5 +15,10 @@ export const calculateScore = (userAnswers, quiz) => {
       correctAnswers++;
     }
   }
-  return correctAnswers;
+
+  return {
+    correctAnswers,
+    quizTitle,
+    quizLength,
+  };
 };

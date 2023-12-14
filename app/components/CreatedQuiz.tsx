@@ -4,6 +4,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 
 const CreatedQuizzes = () => {
   const [quizzes, setQuizzes] = useState([]);
+  const userEmail = localStorage.getItem("userEmail");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -11,8 +12,10 @@ const CreatedQuizzes = () => {
         const response = await fetch("/api/getQuizzes");
         if (response.ok) {
           const data = await response.json();
-          console.log(data);
-          setQuizzes(data.quizzes);
+          const filteredQuizzes = data.quizzes.filter(
+            (quiz) => quiz.userEmail === userEmail
+          );
+          setQuizzes(filteredQuizzes);
         } else {
           console.error("Failed to fetch data");
         }
@@ -22,7 +25,7 @@ const CreatedQuizzes = () => {
     };
 
     fetchData();
-  }, []);
+  }, [userEmail]);
 
   const deleteQuiz = async (id) => {
     try {
@@ -35,7 +38,6 @@ const CreatedQuizzes = () => {
       });
 
       if (response.ok) {
-        // Quiz deleted successfully, update the state
         setQuizzes((prevQuizzes) =>
           prevQuizzes.filter((quiz) => quiz.id !== id)
         );

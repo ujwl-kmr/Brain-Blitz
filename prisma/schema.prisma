@@ -9,15 +9,17 @@ datasource db {
 }
 
 model User {
-  id           String @id @default(cuid())
-  email        String @unique
-  passwordHash String
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  createdAt DateTime @default(now())
 }
 
 model Quiz {
   id        Int        @id @default(autoincrement())
   title     String
   image     String
+  userEmail String
   createdAt DateTime   @default(now())
   questions Question[]
 }
@@ -29,6 +31,8 @@ model Question {
   quizId        Int
   quiz          Quiz     @relation(fields: [quizId], references: [id])
   options       Option[]
+
+  @@index([quizId])
 }
 
 model Option {
@@ -36,4 +40,6 @@ model Option {
   text       String
   questionId Int
   question   Question @relation(fields: [questionId], references: [id])
+
+  @@index([questionId])
 }

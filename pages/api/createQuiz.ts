@@ -6,12 +6,13 @@ const prisma = new PrismaClient();
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === "POST") {
     try {
-      const { quizTitle, quizImage, questions } = req.body;
+      const { quizTitle, quizImage, questions, userEmail} = req.body;
 
       const quiz = await prisma.quiz.create({
         data: {
           title: quizTitle,
-          image: quizImage, // Use the image URL as is
+          image: quizImage, 
+          userEmail: userEmail
         },
       });
 

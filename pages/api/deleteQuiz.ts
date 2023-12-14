@@ -31,7 +31,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         });
       }
 
-      // Delete the quiz
       await prisma.quiz.delete({
         where: { id: id },
       });

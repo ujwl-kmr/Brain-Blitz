@@ -1,109 +1,53 @@
-import prisma from "@/app/lib/prisma";
-import { Account, AuthOptions, Profile, Session, User } from "next-auth";
-import CredentialsProvider from 'next-auth/providers/credentials'
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken'
-import { JWT } from "next-auth/jwt";
-import NextAuth from "next-auth/next";
+import NextAuth from 'next-auth';
+import GoogleProvider from 'next-auth/providers/google';
+import prisma from '@/app/lib/prisma';
 
-export const authOptions: AuthOptions = {
-    providers: [
-        CredentialsProvider({
-            name: 'credentials',
-            
-            credentials: {
-                email: {
-                    label: 'Email',
-                    type: 'text',
-                    placeholder: 'your@email.com'
-                },
-                password: {
-                    label: 'Password',
-                    type: 'password'
-                }
-            },
-            authorize: async (credentials) => {
-                if(!credentials) {
-                    return null;
-                }
-
-                const { email, password } = credentials;
-
-                const user = await prisma.user.findUnique({
-                    where: {
-                        email
-                    }
-                });
-
-                if(!user) {
-                    return null;
-                }
-
-                const userPassword = user.passwordHash;
-
-                const isValidPassword = bcrypt.compareSync(password, userPassword);
-
-                if(!isValidPassword) {
-                    return null;
-                }
-
-                return user;
+const authOptions = {
+  providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOGGLE_CLIENT_SECRET, 
+    }),
+  ],
+  callbacks: {
+    async signIn({ user, account }) {
+      if (account.provider === "google") {
+        const { name, email } = user;
+        try {
+          const userExists = await prisma.user.findUnique({
+            where: { 
+              email: email 
             }
-        })
-    ],
-    pages: {
-        signIn: '/auth/login',
-        signOut: '/auth/logout',
-    },
-    secret: process.env.NEXTAUTH_SECRET,
-    jwt: {
-        async encode({secret, token}) {
-            if(!token) {
-                throw new Error('No token to encode');
-            }
-            return jwt.sign(token, secret);
-        },
-        async decode({secret, token}) {
-            if(!token) {
-                throw new Error('No token to decode');
-            }
-            const decodedToken = jwt.verify(token, secret);
-            if(typeof decodedToken === 'string') {
-                return JSON.parse(decodedToken);
-            } else {
-                return decodedToken;
-            }
+          });
+
+          if (!userExists) {
+            const res = await fetch("http://localhost:3000/api/user/login", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                name,
+                email,
+              }),
+            });
+
+            if (res.ok){
+
+            return user;
+          }
         }
-    },
-    session: {
-        strategy: 'jwt',
-        maxAge: 30 * 24 * 60 * 60,
-        updateAge: 24 * 60 * 60,
-    },
-    callbacks: {
-        async session(params: {session: Session; token: JWT; user: User}) {
-            if(params.session.user) {
-                params.session.user.email = params.token.email;
-            }
-
-            return params.session;
-        },
-        async jwt(params: {
-            token: JWT;
-            user?: User | undefined;
-            account?: Account | null | undefined;
-            profile?: Profile | undefined;
-            isNewUser?: boolean | undefined;
-        }) {
-            if(params.user) {
-                params.token.email = params.user.email;
-            }
-
-            return params.token;
+        } catch (error) {
+          console.log(error);
         }
-    }
-}
+      }
+
+      return user;
+    },
+  },
+};
 
 const handler = NextAuth(authOptions);
 
 export { handler as GET, handler as POST };
+
