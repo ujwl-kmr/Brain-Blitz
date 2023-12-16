@@ -45,7 +45,7 @@ const CreateQuizPage = () => {
     setQuestions(updatedQuestions);
   };
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
 
     const isAnyFieldEmpty =

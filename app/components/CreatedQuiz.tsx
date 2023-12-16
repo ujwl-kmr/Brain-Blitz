@@ -2,8 +2,16 @@
 import { useState, useEffect } from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
 
+interface Quiz {
+  id: string;
+  title: string;
+  questions: any[];
+  createdAt: string;
+  userEmail: string;
+}
+
 const CreatedQuizzes = () => {
-  const [quizzes, setQuizzes] = useState([]);
+  const [quizzes, setQuizzes] = useState<Quiz[]>([]);
   const userEmail = localStorage.getItem("userEmail");
 
   useEffect(() => {
@@ -13,7 +21,7 @@ const CreatedQuizzes = () => {
         if (response.ok) {
           const data = await response.json();
           const filteredQuizzes = data.quizzes.filter(
-            (quiz) => quiz.userEmail === userEmail
+            (quiz: Quiz) => quiz.userEmail === userEmail
           );
           setQuizzes(filteredQuizzes);
         } else {
@@ -27,7 +35,7 @@ const CreatedQuizzes = () => {
     fetchData();
   }, [userEmail]);
 
-  const deleteQuiz = async (id) => {
+  const deleteQuiz = async (id: string) => {
     try {
       const response = await fetch("/api/deleteQuiz", {
         method: "POST",

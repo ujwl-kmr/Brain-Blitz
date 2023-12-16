@@ -1,4 +1,23 @@
-export const calculateScore = (userAnswers, quiz) => {
+interface UserAnswers {
+  [questionId: number]: number;
+}
+
+interface Option {
+  id: number;
+}
+
+interface Question {
+  id: number;
+  correctOption: number;
+  options: Option[];
+}
+
+interface Quiz {
+  title: string;
+  questions: Question[];
+}
+
+export const calculateScore = (userAnswers: UserAnswers, quiz: Quiz) => {
   let correctAnswers = 0;
   const quizTitle = quiz.title;
   const quizLength = quiz.questions.length;
@@ -8,7 +27,7 @@ export const calculateScore = (userAnswers, quiz) => {
     const correctOptionIndex = question.correctOption;
 
     const userAnswerIndex = question.options.findIndex(
-      (option) => option.id === userAnswer
+      (option: Option) => option.id === userAnswer
     );
 
     if (userAnswerIndex === correctOptionIndex) {

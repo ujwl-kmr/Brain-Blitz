@@ -1,9 +1,10 @@
 import { calculateScore } from "@/app/components/scoreCalculator";
+import { NextApiRequest, NextApiResponse } from "next";
 
-export default async (req, res) => {
+export default async (req:NextApiRequest, res:NextApiResponse) => {
   try {
-    const userAnswers = req.body.userAnswers; // Assuming you send user answers in the request
-    const quiz = req.body.quiz; // Assuming you send quiz data in the request
+    const userAnswers = req.body.userAnswers; 
+    const quiz = req.body.quiz; 
     const score = calculateScore(userAnswers, quiz);
 
     res.status(200).json({ score });

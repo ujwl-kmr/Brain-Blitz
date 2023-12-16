@@ -1,12 +1,12 @@
-import NextAuth from 'next-auth';
-import GoogleProvider from 'next-auth/providers/google';
-import prisma from '@/app/lib/prisma';
+import NextAuth from "next-auth";
+import GoogleProvider from "next-auth/providers/google";
+import prisma from "@/app/lib/prisma";
 
 const authOptions = {
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOGGLE_CLIENT_SECRET, 
+      clientSecret: process.env.GOGGLE_CLIENT_SECRET,
     }),
   ],
   callbacks: {
@@ -15,13 +15,13 @@ const authOptions = {
         const { name, email } = user;
         try {
           const userExists = await prisma.user.findUnique({
-            where: { 
-              email: email 
-            }
+            where: {
+              email: email,
+            },
           });
 
           if (!userExists) {
-            const res = await fetch("http://localhost:3000/api/user/login", {
+            const res = await fetch("/api/user/login", {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
@@ -32,11 +32,10 @@ const authOptions = {
               }),
             });
 
-            if (res.ok){
-
-            return user;
+            if (res.ok) {
+              return user;
+            }
           }
-        }
         } catch (error) {
           console.log(error);
         }
@@ -50,4 +49,3 @@ const authOptions = {
 const handler = NextAuth(authOptions);
 
 export { handler as GET, handler as POST };
-

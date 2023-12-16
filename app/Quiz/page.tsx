@@ -2,6 +2,12 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 
+interface Quiz {
+  id: string;
+  title: string;
+  image: string;
+}
+
 const TakeQuizPage = () => {
   const [quizzes, setQuizzes] = useState([]);
 
@@ -32,7 +38,7 @@ const TakeQuizPage = () => {
               Take Quiz
             </h1>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-10">
-              {quizzes.map((quiz) => (
+              {quizzes.map((quiz: Quiz) => (
                 <div
                   key={quiz.id}
                   className="bg-white p-4 rounded-lg shadow-lg transition-transform hover:scale-105 hover:shadow-xl"

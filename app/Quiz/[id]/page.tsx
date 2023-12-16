@@ -19,14 +19,18 @@ interface Quiz {
   questions: Question[];
 }
 
-const TheQuizPage = ({ params }) => {
+interface Params {
+  id: number;
+}
+
+const TheQuizPage = ({ params }: { params: Params }) => {
   const [quiz, setQuiz] = useState<Quiz | null>(null);
   const [answers, setAnswers] = useState<{ [questionId: number]: number }>({});
 
   useEffect(() => {
     const { id } = params;
     if (id) {
-      fetchData(Number(id));
+      fetchData(id);
     }
   }, [params]);
 
@@ -58,7 +62,7 @@ const TheQuizPage = ({ params }) => {
         body: JSON.stringify({ userAnswers: answers, quiz }),
       });
 
-      if (response.ok) {
+      if (response.ok && quiz) {
         const result = await response.json();
 
         const { correctAnswers, quizTitle, quizLength } = calculateScore(
