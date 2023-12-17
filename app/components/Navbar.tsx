@@ -15,7 +15,12 @@ const Navbar: React.FC = () => {
   const [userData, setUserData] = useState<UserData>(null);
 
   useEffect(() => {
-    if (status === "authenticated" && session && session.user) {
+    if (
+      typeof window !== "undefined" &&
+      status === "authenticated" &&
+      session &&
+      session.user
+    ) {
       localStorage.setItem("userName", session.user.name || "");
       localStorage.setItem("userEmail", session.user.email || "");
 

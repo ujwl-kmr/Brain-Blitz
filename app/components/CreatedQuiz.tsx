@@ -12,7 +12,8 @@ interface Quiz {
 
 const CreatedQuizzes = () => {
   const [quizzes, setQuizzes] = useState<Quiz[]>([]);
-  const userEmail = localStorage.getItem("userEmail");
+  const userEmail =
+    typeof window !== "undefined" ? localStorage.getItem("userEmail") : null;
 
   useEffect(() => {
     const fetchData = async () => {
